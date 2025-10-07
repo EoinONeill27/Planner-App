@@ -4,6 +4,9 @@ import TaskList from './components/TaskList';
 import TaskForm from './components/TaskForm';
 import TaskStats from './components/TaskStats';
 import TaskFilters from './components/TaskFilters';
+import TaskTemplates from './components/TaskTemplates';
+import TimeTracker from './components/TimeTracker';
+import ThemeToggle from './components/ThemeToggle';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -13,12 +16,16 @@ function App() {
   const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [timeTrackingTask, setTimeTrackingTask] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all',
     priority: 'all',
     category: 'all',
     recurring: 'all'
   });
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch tasks from API
   const fetchTasks = async () => {
@@ -85,8 +92,9 @@ function App() {
     }
   };
 
-  // Filter tasks based on current filters
+  // Filter tasks based on current filters and search query
   const filteredTasks = tasks.filter(task => {
+    // Apply existing filters
     if (filters.status !== 'all' && 
         ((filters.status === 'completed' && !task.completed) || 
          (filters.status === 'pending' && task.completed))) {
@@ -106,6 +114,22 @@ function App() {
         return false;
       }
     }
+
+    // Apply search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const searchableText = [
+        task.title,
+        task.description,
+        task.category,
+        ...(task.tags || [])
+      ].join(' ').toLowerCase();
+      
+      if (!searchableText.includes(query)) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -124,7 +148,8 @@ function App() {
   }
 
   return (
-    <div className="container">
+    <div className={`container ${isDarkMode ? 'dark-mode' : ''}`}>
+      <ThemeToggle isDarkMode={isDarkMode} onToggle={() => setIsDarkMode(!isDarkMode)} />
       <div className="card">
         <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
           📋 Task Planner
@@ -144,21 +169,69 @@ function App() {
 
         <TaskStats tasks={tasks} />
         
+        {/* Search Bar */}
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="🔍 Search tasks by title, description, category, or tags..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="form-control"
+            style={{ 
+              fontSize: '16px', 
+              padding: '12px 16px',
+              borderRadius: '25px',
+              border: '2px solid #e1e5e9'
+            }}
+          />
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <TaskFilters filters={filters} setFilters={setFilters} />
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowAddModal(true)}
-          >
-            + Add Task
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setShowTemplates(true)}
+            >
+              📋 Templates
+            </button>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => {
+                window.open(`${API_BASE_URL}/tasks/export`, '_blank');
+              }}
+            >
+              📊 Export
+            </button>
+            <button 
+              className="btn btn-primary"
+              onClick={() => setShowAddModal(true)}
+            >
+              + Add Task
+            </button>
+          </div>
         </div>
+
+        {/* Search Results Info */}
+        {searchQuery.trim() && (
+          <div style={{ 
+            marginBottom: '15px', 
+            padding: '10px', 
+            background: '#e3f2fd', 
+            borderRadius: '6px',
+            fontSize: '14px',
+            color: '#1976d2'
+          }}>
+            Found {filteredTasks.length} task(s) matching "{searchQuery}"
+          </div>
+        )}
 
         <TaskList 
           tasks={filteredTasks}
           onToggle={toggleTask}
           onEdit={setEditingTask}
           onDelete={deleteTask}
+          onTimeTrack={setTimeTrackingTask}
         />
 
         {showAddModal && (
@@ -175,6 +248,23 @@ function App() {
             onSubmit={(taskData) => updateTask(editingTask.id, taskData)}
             onClose={() => setEditingTask(null)}
             title="Edit Task"
+          />
+        )}
+
+        {showTemplates && (
+          <TaskTemplates 
+            onTemplateSelect={(task) => {
+              setTasks([...tasks, task]);
+              setShowTemplates(false);
+            }}
+            onClose={() => setShowTemplates(false)}
+          />
+        )}
+
+        {timeTrackingTask && (
+          <TimeTracker 
+            task={timeTrackingTask}
+            onClose={() => setTimeTrackingTask(null)}
           />
         )}
       </div>

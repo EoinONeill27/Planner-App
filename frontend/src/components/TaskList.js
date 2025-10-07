@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 
-const TaskList = ({ tasks, onToggle, onEdit, onDelete }) => {
+const TaskList = ({ tasks, onToggle, onEdit, onDelete, onTimeTrack }) => {
   if (tasks.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
@@ -78,6 +78,32 @@ const TaskList = ({ tasks, onToggle, onEdit, onDelete }) => {
                  {task.priority}
                </span>
                <span>{task.category}</span>
+               {task.estimated_duration && (
+                 <span style={{ color: '#ff9800', fontWeight: '500' }}>
+                   ⏱️ {task.estimated_duration}m
+                 </span>
+               )}
+               {task.actual_duration > 0 && (
+                 <span style={{ color: '#4caf50', fontWeight: '500' }}>
+                   ✅ {Math.floor(task.actual_duration)}m
+                 </span>
+               )}
+               {task.tags && task.tags.length > 0 && (
+                 <div style={{ marginTop: '5px' }}>
+                   {task.tags.map((tag, index) => (
+                     <span key={index} style={{
+                       background: '#e3f2fd',
+                       color: '#1976d2',
+                       padding: '2px 6px',
+                       borderRadius: '4px',
+                       fontSize: '11px',
+                       marginRight: '4px'
+                     }}>
+                       {tag}
+                     </span>
+                   ))}
+                 </div>
+               )}
                {task.is_recurring && (
                  <span style={{ color: '#667eea', fontWeight: '500' }}>
                    🔄 {getRecurrenceText(task)}
@@ -96,8 +122,16 @@ const TaskList = ({ tasks, onToggle, onEdit, onDelete }) => {
             <button 
               className="btn btn-secondary"
               onClick={() => onEdit(task)}
+              style={{ marginRight: '5px' }}
             >
               Edit
+            </button>
+            <button 
+              className="btn btn-info"
+              onClick={() => onTimeTrack(task)}
+              style={{ marginRight: '5px' }}
+            >
+              ⏱️ Time
             </button>
             <button 
               className="btn btn-danger"

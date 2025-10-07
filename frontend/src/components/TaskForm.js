@@ -9,7 +9,9 @@ const TaskForm = ({ task, onSubmit, onClose, title }) => {
     due_date: '',
     is_recurring: false,
     recurrence_type: 'none',
-    recurrence_interval: 1
+    recurrence_interval: 1,
+    estimated_duration: 30,
+    tags: []
   });
 
   useEffect(() => {
@@ -22,7 +24,9 @@ const TaskForm = ({ task, onSubmit, onClose, title }) => {
         due_date: task.due_date ? task.due_date.split('T')[0] : '',
         is_recurring: task.is_recurring || false,
         recurrence_type: task.recurrence_type || 'none',
-        recurrence_interval: task.recurrence_interval || 1
+        recurrence_interval: task.recurrence_interval || 1,
+        estimated_duration: task.estimated_duration || 30,
+        tags: task.tags || []
       });
     }
   }, [task]);
@@ -123,6 +127,36 @@ const TaskForm = ({ task, onSubmit, onClose, title }) => {
               className="form-control"
               value={formData.due_date}
               onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="estimated_duration">Estimated Duration (minutes)</label>
+            <input
+              type="number"
+              id="estimated_duration"
+              name="estimated_duration"
+              className="form-control"
+              value={formData.estimated_duration}
+              onChange={handleChange}
+              min="1"
+              max="480"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tags">Tags (comma-separated)</label>
+            <input
+              type="text"
+              id="tags"
+              name="tags"
+              className="form-control"
+              value={formData.tags.join(', ')}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
+              }))}
+              placeholder="Enter tags separated by commas"
             />
           </div>
 

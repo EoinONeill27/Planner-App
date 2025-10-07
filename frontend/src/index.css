@@ -70,6 +70,15 @@ code {
   background: #c82333;
 }
 
+.btn-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover {
+  background: #138496;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
@@ -275,6 +284,73 @@ code {
   margin-right: 4px;
 }
 
+/* Template item styles */
+.template-item:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Time tracking styles */
+.time-entry {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-left: 3px solid #17a2b8;
+}
+
+.timer-display {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: bold;
+  color: #17a2b8;
+}
+
+/* Tag styles */
+.tag {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+/* Dark mode styles */
+.dark-mode {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #ecf0f1;
+}
+
+.dark-mode .card {
+  background: #34495e;
+  color: #ecf0f1;
+}
+
+.dark-mode .task-item {
+  background: #34495e;
+  color: #ecf0f1;
+}
+
+.dark-mode .form-control {
+  background: #2c3e50;
+  color: #ecf0f1;
+  border-color: #4a5f7a;
+}
+
+.dark-mode .modal-content {
+  background: #34495e;
+  color: #ecf0f1;
+}
+
+.dark-mode .stat-card {
+  background: #34495e;
+  color: #ecf0f1;
+}
+
+/* Mobile-specific enhancements */
 @media (max-width: 768px) {
   .container {
     padding: 10px;
@@ -292,5 +368,52 @@ code {
   
   .task-actions {
     flex-wrap: wrap;
+  }
+
+  /* Touch-friendly buttons */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 20px;
+  }
+
+  /* Larger checkboxes for touch */
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 12px;
+  }
+
+  /* Better modal for mobile */
+  .modal-content {
+    margin: 20px;
+    max-height: 90vh;
+    width: calc(100% - 40px);
+  }
+
+  /* Swipe-friendly task items */
+  .task-item {
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  /* Mobile-optimized stats grid */
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-number {
+    font-size: 24px;
+  }
+}
+
+/* Prevent zoom on input focus */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
   }
 } 
